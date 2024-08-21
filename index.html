@@ -8,7 +8,40 @@
 </head>
 
 <body>
+  <div id="app">
+    <div>
+      <label>input one chord</label>
+      <input type="text" id="input-chord" />
+      <button onclick="calcChord()">get chord</button>
+      <p>
+        available intervals:
+      <pre>maj, m, aug, dim, 7, maj7, m7, m, m7b5, dim7, 9, maj9, m9, 11, 13, add9, 6, m6, sus4, sus2, 5</pre>
+      </p>
+    </div>
+    <div>
+      <label>result</label>
+      <input type="text" id="result-chord" />
+    </div>
+  </div>
   <script>
+    function calcChord () {
+      /** @type {HTMLInputElement} */const inputElement = document.getElementById("input-chord")
+      /** @type {HTMLInputElement} */const resultElement = document.getElementById("result-chord")
+      try {
+        const inputChord = inputElement.value.replace(/^[\S]{1}/, s => s.toUpperCase());
+        const resultkeys = getPianoKeys(inputChord);
+        resultElement.value = resultkeys;
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    function getPianoKeys (chord) {
+      const root = chord.match(/[A-G]#?/)[0] // 코드에서 루트 음정 추출
+      const type = chord.slice(root.length)  // 코드 타입 추출
+
+      const chordNotes = getNotesForChord(root, type)
+      return chordNotes;
+    }
     // 피아노의 기본 음계 (C4 기준, MIDI 60)
     const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
@@ -43,7 +76,7 @@
       }
 
       // 기본 음에 해당하는 음들 계산
-      const chordNotes = intervals[type].map(interval => {
+      const chordNotes = intervals[type || 'maj'].map(interval => {
         const noteIndex = (rootIndex + interval) % notes.length
         return notes[noteIndex]
       })
