@@ -28,9 +28,9 @@
       /** @type {HTMLInputElement} */const inputElement = document.getElementById("input-chord")
       /** @type {HTMLInputElement} */const resultElement = document.getElementById("result-chord")
       try {
-        const inputChord = inputElement.value.replace(/^[\S]{1}/, s => s.toUpperCase());
-        const resultkeys = getPianoKeys(inputChord);
-        resultElement.value = resultkeys;
+        const inputChord = inputElement.value.replace(/^[\S]{1}/, s => s.toUpperCase())
+        const resultkeys = getPianoKeys(inputChord)
+        resultElement.value = resultkeys
       } catch (e) {
         console.error(e)
       }
@@ -40,7 +40,7 @@
       const type = chord.slice(root.length)  // 코드 타입 추출
 
       const chordNotes = getNotesForChord(root, type, false)
-      return chordNotes;
+      return chordNotes
     }
     // 피아노의 기본 음계 (C4 기준, MIDI 60)
     const enharmonicNotes = {
@@ -119,6 +119,13 @@
     displayPianoKeys('D7', true)
     displayPianoKeys('Fsus4', false)
     displayPianoKeys('A6', true)
+  </script>
+  <script src="./app.js"></script>
+  <!-- CODELAB: Add the install script here -->
+  <script src="./install.js"></script>
+  <script>
+    // navigator 객체에 serviceWorker라는 프로퍼티가 있는지 확인하는 조건입니다. //만약 지원하지 않는 브라우저라면 serviceWorker라는 프로퍼티가 있을 경우에만 서비스워커를 등록 // CODELAB: Register service worker. 
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./service-worker.js').then((reg) => { console.log('Service worker registered.', reg) }) }) }
   </script>
 </body>
 
