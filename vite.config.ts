@@ -1,36 +1,53 @@
-import { VitePWA } from 'vite-plugin-pwa';
+import { VitePWA } from 'vite-plugin-pwa'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), VitePWA({
-    registerType: 'prompt',
-    injectRegister: false,
+  plugins: [
+    vue(),
+    VitePWA({
+      // registerType: 'prompt',
+      registerType: 'autoUpdate',
+      injectRegister: false,
 
-    pwaAssets: {
-      disabled: false,
-      config: true,
-    },
+      pwaAssets: {
+        disabled: false,
+        config: true,
+      },
 
-    manifest: {
-      name: 'my-chord-viewer',
-      short_name: 'my-chord-viewer',
-      description: 'my-chord-viewer',
-      theme_color: '#ffffff',
-    },
+      manifest: {
+        name: 'my-chord-viewer',
+        short_name: 'my-chord-viewer',
+        description: 'my-chord-viewer',
+        theme_color: '#ffffff',
+        icons: [
+          {
+            src: 'img/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+          {
+            src: 'img/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+        ],
+      },
 
-    workbox: {
-      globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
-      cleanupOutdatedCaches: true,
-      clientsClaim: true,
-    },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+      },
 
-    devOptions: {
-      enabled: false,
-      navigateFallback: 'index.html',
-      suppressWarnings: true,
-      type: 'module',
-    },
-  })],
+      devOptions: {
+        enabled: true,
+        navigateFallback: 'index.html',
+        suppressWarnings: true,
+        type: 'module',
+      },
+    }),
+  ],
 })
