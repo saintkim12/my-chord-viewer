@@ -1,32 +1,51 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import PWABadge from './components/PWABadge.vue'
-</script>
+import { onMounted, ref } from 'vue'
+import { get } from '@tonaljs/chord'
+const chord = ref('')
+const notes = ref('')
+const stores = ref({} as Record<string, ReturnType<typeof get>>)
 
+const convertChordAndNotes = () => {
+  if (chord.value) {
+    const chordInfo = stores.value[chord.value] ? stores.value[chord.value]! : get(chord.value)
+    if (!chordInfo.empty) {
+      stores.value[chord.value] = chordInfo
+      localStorage.setItem('stores', JSON.stringify(stores.value))
+      notes.value = chordInfo.notes.join(', ')
+    }
+  }
+}
+const convertFromStores = (value: string) => {
+  chord.value = value
+  convertChordAndNotes()
+}
+
+onMounted(() => {
+  try {
+    stores.value = JSON.parse(localStorage.getItem('stores') ?? '{}')
+  } catch (e: any) {
+    window.alert(e.message)
+  }
+})
+</script>
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/favicon.svg" class="logo" alt="my-chord-viewer logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <div>
+      Chord: <input type="text" v-model="chord" />
+    </div>
+    <div>
+      <button @click.prevent="convertChordAndNotes">Get</button>
+    </div>
+    <div>
+      Notes: <input type="text" v-model="notes" />
+    </div>
+    <div>
+      inputs
+      <select multiple style="width: 200px;" @input="convertFromStores(($event.target as HTMLSelectElement).value)">
+        <option v-for="key in Object.keys(stores)" :key="key">{{ key }}</option>
+      </select>
+    </div>
   </div>
-  <HelloWorld msg="my-chord-viewer" />
-  <PWABadge />
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+<style scoped></style>
