@@ -3,7 +3,8 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig((a) => ({
+  base: a.mode === 'development' ? '' : '/my-chord-viewer/',
   plugins: [
     vue(),
     VitePWA({
@@ -21,6 +22,9 @@ export default defineConfig({
         short_name: 'my-chord-viewer',
         description: 'my-chord-viewer',
         theme_color: '#ffffff',
+        // display: 'fullscreen',
+        scope: '.',
+        start_url: '.',
         icons: [
           {
             src: 'img/icon-192.png',
@@ -50,4 +54,4 @@ export default defineConfig({
       },
     }),
   ],
-})
+}))
