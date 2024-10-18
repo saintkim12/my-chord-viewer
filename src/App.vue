@@ -31,26 +31,30 @@ const convertFromStores = (value: string) => {
   chord.value = value
   convertChordAndNotes()
 }
+const removeStores = () => {
+  stores.value = {}
+  localStorage.removeItem('stores')
+}
 const isTargetKey = (v1: string, v2: string) => {
   return v1 && v2 && midi(v1) === midi(v2)
 }
 const hasTargetKey = (v: string) => {
-  return pressedKeys.value.some(key => isTargetKey(key, v))
+  return pressedKeys.value.some((key) => isTargetKey(key, v))
 }
 
-const updateChordText = (() => {
+const updateChordText = () => {
   const [note, suffix, chordType] = chordSelector.value
-  let newNote = note ? `${note}${suffix ?? ''}` : chord.value.match(
-    new RegExp(`(${dict.value.notes.concat(dict.value.notes.map(s => s.toLowerCase())).join('|')})(${['#', 'b', ''].join('|')})`)
-  )?.[0]
-  if (!newNote) return;
+  let newNote = note ? `${note}${suffix ?? ''}` : chord.value.match(new RegExp(`(${dict.value.notes.concat(dict.value.notes.map((s) => s.toLowerCase())).join('|')})(${['#', 'b', ''].join('|')})`))?.[0]
+  if (!newNote) return
   const newChord = `${newNote}${chordType}`
-  chord.value = newChord;
-})
+  chord.value = newChord
+}
 
 onMounted(() => {
-  dict.value.chordTypes = all().flatMap(o => o.aliases).filter(v => v);
-  dict.value.notes = names();
+  dict.value.chordTypes = all()
+    .flatMap((o) => o.aliases)
+    .filter((v) => v)
+  dict.value.notes = names()
   try {
     stores.value = JSON.parse(localStorage.getItem('stores') ?? '{}')
   } catch (e: any) {
@@ -59,73 +63,179 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div style="display: flex; flex-direction: column; height: 100%; gap: 8px; text-align: center;">
-    <div>
-      <div class="piano-container">
-        <ul class="piano-keys-list">
-          <!--  -->
-          <li class="piano-keys white-key" :class="[hasTargetKey('C' + '' + '4') && 'pressed']"></li>
-          <li class="piano-keys black-key" :class="[hasTargetKey('C' + '#' + '4') && 'pressed']"></li>
-          <li class="piano-keys white-key" :class="[hasTargetKey('D' + '' + '4') && 'pressed']"></li>
-          <li class="piano-keys black-key" :class="[hasTargetKey('D' + '#' + '4') && 'pressed']"></li>
-          <li class="piano-keys white-key" :class="[hasTargetKey('E' + '' + '4') && 'pressed']"></li>
-          <!--  -->
-          <li class="piano-keys white-key" :class="[hasTargetKey('F' + '' + '4') && 'pressed']"></li>
-          <li class="piano-keys black-key" :class="[hasTargetKey('F' + '#' + '4') && 'pressed']"></li>
-          <li class="piano-keys white-key" :class="[hasTargetKey('G' + '' + '4') && 'pressed']"></li>
-          <li class="piano-keys black-key" :class="[hasTargetKey('G' + '#' + '4') && 'pressed']"></li>
-          <li class="piano-keys white-key" :class="[hasTargetKey('A' + '' + '4') && 'pressed']"></li>
-          <li class="piano-keys black-key" :class="[hasTargetKey('A' + '#' + '4') && 'pressed']"></li>
-          <li class="piano-keys white-key" :class="[hasTargetKey('B' + '' + '4') && 'pressed']"></li>
-          <!--  -->
-          <li class="piano-keys white-key" :class="[hasTargetKey('C' + '' + '5') && 'pressed']"></li>
-          <li class="piano-keys black-key" :class="[hasTargetKey('C' + '#' + '5') && 'pressed']"></li>
-          <li class="piano-keys white-key" :class="[hasTargetKey('D' + '' + '5') && 'pressed']"></li>
-          <li class="piano-keys black-key" :class="[hasTargetKey('D' + '#' + '5') && 'pressed']"></li>
-          <li class="piano-keys white-key" :class="[hasTargetKey('E' + '' + '5') && 'pressed']"></li>
-          <!--  -->
-          <li class="piano-keys white-key" :class="[hasTargetKey('F' + '' + '5') && 'pressed']"></li>
-          <li class="piano-keys black-key" :class="[hasTargetKey('F' + '#' + '5') && 'pressed']"></li>
-          <li class="piano-keys white-key" :class="[hasTargetKey('G' + '' + '5') && 'pressed']"></li>
-          <li class="piano-keys black-key" :class="[hasTargetKey('G' + '#' + '5') && 'pressed']"></li>
-          <li class="piano-keys white-key" :class="[hasTargetKey('A' + '' + '5') && 'pressed']"></li>
-          <li class="piano-keys black-key" :class="[hasTargetKey('A' + '#' + '5') && 'pressed']"></li>
-          <li class="piano-keys white-key" :class="[hasTargetKey('B' + '' + '5') && 'pressed']"></li>
-        </ul>
+  <div style="height: -webkit-fill-available; overflow: hidden; display: flex; padding: 20px; gap: 16px">
+    <div style="flex: 1 1 auto; height: 100%; outline: 1px solid red; display: flex; flex-direction: column; gap: 20px; overflow: hidden">
+      <div style="flex: 0 0 135px; outline: 1px solid green">
+        <div class="piano-container">
+          <ul class="piano-keys-list">
+            <!--  -->
+            <li class="piano-keys white-key" :class="[hasTargetKey('C' + '' + '4') && 'pressed']"></li>
+            <li class="piano-keys black-key" :class="[hasTargetKey('C' + '#' + '4') && 'pressed']"></li>
+            <li class="piano-keys white-key" :class="[hasTargetKey('D' + '' + '4') && 'pressed']"></li>
+            <li class="piano-keys black-key" :class="[hasTargetKey('D' + '#' + '4') && 'pressed']"></li>
+            <li class="piano-keys white-key" :class="[hasTargetKey('E' + '' + '4') && 'pressed']"></li>
+            <!--  -->
+            <li class="piano-keys white-key" :class="[hasTargetKey('F' + '' + '4') && 'pressed']"></li>
+            <li class="piano-keys black-key" :class="[hasTargetKey('F' + '#' + '4') && 'pressed']"></li>
+            <li class="piano-keys white-key" :class="[hasTargetKey('G' + '' + '4') && 'pressed']"></li>
+            <li class="piano-keys black-key" :class="[hasTargetKey('G' + '#' + '4') && 'pressed']"></li>
+            <li class="piano-keys white-key" :class="[hasTargetKey('A' + '' + '4') && 'pressed']"></li>
+            <li class="piano-keys black-key" :class="[hasTargetKey('A' + '#' + '4') && 'pressed']"></li>
+            <li class="piano-keys white-key" :class="[hasTargetKey('B' + '' + '4') && 'pressed']"></li>
+            <!--  -->
+            <li class="piano-keys white-key" :class="[hasTargetKey('C' + '' + '5') && 'pressed']"></li>
+            <li class="piano-keys black-key" :class="[hasTargetKey('C' + '#' + '5') && 'pressed']"></li>
+            <li class="piano-keys white-key" :class="[hasTargetKey('D' + '' + '5') && 'pressed']"></li>
+            <li class="piano-keys black-key" :class="[hasTargetKey('D' + '#' + '5') && 'pressed']"></li>
+            <li class="piano-keys white-key" :class="[hasTargetKey('E' + '' + '5') && 'pressed']"></li>
+            <!--  -->
+            <li class="piano-keys white-key" :class="[hasTargetKey('F' + '' + '5') && 'pressed']"></li>
+            <li class="piano-keys black-key" :class="[hasTargetKey('F' + '#' + '5') && 'pressed']"></li>
+            <li class="piano-keys white-key" :class="[hasTargetKey('G' + '' + '5') && 'pressed']"></li>
+            <li class="piano-keys black-key" :class="[hasTargetKey('G' + '#' + '5') && 'pressed']"></li>
+            <li class="piano-keys white-key" :class="[hasTargetKey('A' + '' + '5') && 'pressed']"></li>
+            <li class="piano-keys black-key" :class="[hasTargetKey('A' + '#' + '5') && 'pressed']"></li>
+            <li class="piano-keys white-key" :class="[hasTargetKey('B' + '' + '5') && 'pressed']"></li>
+          </ul>
+        </div>
       </div>
-      <div>
-        Notes: <input type="text" :value="notes.join(', ')" />
+      <div style="flex: 0 0 73px; outline: 1px solid gray; display: flex; flex-direction: column; justify-content: center; gap: 8px">
+        <div style="display: flex; align-items: center; justify-content: center">
+          <span style="display: inline-flex; align-items: center">{{ notes.join(', ') }}</span>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: center; position: relative">
+          <span style="display: inline-flex; align-items: center" @click.prevent="convertChordAndNotes">{{ chord || '&nbsp;' }}</span>
+          <span v-show="!!chord" style="display: inline-flex; align-items: center; cursor: pointer; position: absolute; right: 50px; top: 0" @click.prevent=";[(chord = ''), (notes = []), (pressedKeys = []), (chordSelector = ['', '', ''])]"
+            ><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M3.59236 0L0 3.59236L1.8344 5.42675L6.36943 10.0382L1.8344 14.5732L0 16.3312L3.59236 20L5.42675 18.1656L10.0382 13.5541L14.5732 18.1656L16.3312 20L20 16.3312L18.1656 14.5732L13.5541 10.0382L18.1656 5.42675L20 3.59236L16.3312 0L14.5732 1.8344L10.0382 6.36943L5.42675 1.8344L3.59236 0Z"
+                fill="#888"
+              />
+            </svg>
+          </span>
+        </div>
       </div>
-      <hr />
+      <div style="flex: 1 1 auto; outline: 1px solid purple; display: flex; align-items: center; justify-content: center; overflow: hidden">
+        <div style="width: 26px; height: 100%; display: flex; flex-direction: column; justify-content: safe center; align-items: center; overflow: hidden auto; scrollbar-width: thin">
+          <div
+            v-for="item in dict.notes"
+            :key="item"
+            style="padding: 10px 0; width: 100%; text-align: center"
+            :style="item === chordSelector[0] && { 'background-color': '#eee' }"
+            @click=";[(chordSelector[0] = item === chordSelector[0] ? '' : item), updateChordText()]"
+          >
+            {{ item }}
+          </div>
+        </div>
+        <div style="width: 47px; height: 100%; display: flex; flex-direction: column; justify-content: safe center; align-items: center; overflow: hidden auto; scrollbar-width: thin">
+          <div
+            v-for="item in ['', '#', 'b']"
+            :key="item"
+            style="padding: 10px 0; width: 100%; text-align: center"
+            :style="item === chordSelector[1] && { 'background-color': '#eee' }"
+            @click=";[(chordSelector[1] = item === chordSelector[1] ? '' : item), updateChordText()]"
+          >
+            {{ item || '(X)' }}
+          </div>
+        </div>
+        <div style="height: 100%; display: flex; flex-direction: column; justify-content: safe center; align-items: center; overflow: hidden auto; scrollbar-width: thin">
+          <div
+            v-for="item in dict.chordTypes"
+            :key="item"
+            style="padding: 10px 0; width: 100%; text-align: center"
+            :style="item === chordSelector[2] && { 'background-color': '#eee' }"
+            @click=";[(chordSelector[2] = item === chordSelector[2] ? '' : item), updateChordText()]"
+          >
+            {{ item }}
+          </div>
+        </div>
+      </div>
     </div>
-    <div>
-      <div>
-        Chord: <input type="text" v-model="chord" /> <button @click.prevent="convertChordAndNotes">Get</button>
+    <div style="flex: 0 0 48px; height: 100%; outline: 1px solid blue; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; overflow: hidden auto; scrollbar-width: thin">
+      <div @click.prevent="removeStores()">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M3.59236 0L0 3.59236L1.8344 5.42675L6.36943 10.0382L1.8344 14.5732L0 16.3312L3.59236 20L5.42675 18.1656L10.0382 13.5541L14.5732 18.1656L16.3312 20L20 16.3312L18.1656 14.5732L13.5541 10.0382L18.1656 5.42675L20 3.59236L16.3312 0L14.5732 1.8344L10.0382 6.36943L5.42675 1.8344L3.59236 0Z"
+            fill="#888"
+          />
+        </svg>
       </div>
       <div>
-        <select v-model="chordSelector[0]" @change="updateChordText()">
-          <option></option>
-          <option v-for="note in dict.notes" :key="note" :value="note">{{ note }}</option>
-        </select>
-        <select v-model="chordSelector[1]" @change="updateChordText()">
-          <option></option>
-          <option v-for="item in ['#', 'b']" :key="item" :value="item">{{ item }}</option>
-        </select>
-        <select v-model="chordSelector[2]" @change="updateChordText()">
-          <option></option>
-          <option v-for="item in dict.chordTypes" :key="item" :value="item">{{ item }}</option>
-        </select>
-        <button @click.prevent="convertChordAndNotes">Get</button>
+        <svg width="16" height="8" viewBox="0 0 16 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 0L15.7942 7.5H0.205771L8 0Z" fill="#D9D9D9" />
+        </svg>
       </div>
-      <hr />
-    </div>
-    <div>
-      inputs
-      <select multiple style="width: 200px;" @input="convertFromStores(($event.target as HTMLSelectElement).value)">
-        <option v-for="key in Object.keys(stores)" :key="key">{{ key }}</option>
-      </select>
+      <div v-for="key in Object.keys(stores)" :key="key" style="padding: 10px 0" @click="convertFromStores(key)">{{ key }}</div>
+      <div>
+        <svg width="16" height="8" viewBox="0 0 16 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 8L15.7942 0.5H0.205771L8 8Z" fill="#D9D9D9" />
+        </svg>
+      </div>
     </div>
   </div>
+  <!-- <div style="display: flex; flex-direction: column; height: 100%; gap: 8px; text-align: center"> -->
+    <!-- <div> -->
+      <!-- <div class="piano-container"> -->
+        <!-- <ul class="piano-keys-list"> -->
+          
+          <!-- <li class="piano-keys white-key" :class="[hasTargetKey('C' + '' + '4') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys black-key" :class="[hasTargetKey('C' + '#' + '4') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys white-key" :class="[hasTargetKey('D' + '' + '4') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys black-key" :class="[hasTargetKey('D' + '#' + '4') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys white-key" :class="[hasTargetKey('E' + '' + '4') && 'pressed']"></li> -->
+          
+          <!-- <li class="piano-keys white-key" :class="[hasTargetKey('F' + '' + '4') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys black-key" :class="[hasTargetKey('F' + '#' + '4') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys white-key" :class="[hasTargetKey('G' + '' + '4') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys black-key" :class="[hasTargetKey('G' + '#' + '4') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys white-key" :class="[hasTargetKey('A' + '' + '4') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys black-key" :class="[hasTargetKey('A' + '#' + '4') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys white-key" :class="[hasTargetKey('B' + '' + '4') && 'pressed']"></li> -->
+          
+          <!-- <li class="piano-keys white-key" :class="[hasTargetKey('C' + '' + '5') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys black-key" :class="[hasTargetKey('C' + '#' + '5') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys white-key" :class="[hasTargetKey('D' + '' + '5') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys black-key" :class="[hasTargetKey('D' + '#' + '5') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys white-key" :class="[hasTargetKey('E' + '' + '5') && 'pressed']"></li> -->
+          
+          <!-- <li class="piano-keys white-key" :class="[hasTargetKey('F' + '' + '5') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys black-key" :class="[hasTargetKey('F' + '#' + '5') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys white-key" :class="[hasTargetKey('G' + '' + '5') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys black-key" :class="[hasTargetKey('G' + '#' + '5') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys white-key" :class="[hasTargetKey('A' + '' + '5') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys black-key" :class="[hasTargetKey('A' + '#' + '5') && 'pressed']"></li> -->
+          <!-- <li class="piano-keys white-key" :class="[hasTargetKey('B' + '' + '5') && 'pressed']"></li> -->
+        <!-- </ul> -->
+      <!-- </div> -->
+      <!-- <div>Notes: <input type="text" :value="notes.join(', ')" /></div> -->
+      <!-- <hr /> -->
+    <!-- </div> -->
+    <!-- <div> -->
+      <!-- <div>Chord: <input type="text" v-model="chord" /> <button @click.prevent="convertChordAndNotes">Get</button></div> -->
+      <!-- <div> -->
+        <!-- <select v-model="chordSelector[0]" @change="updateChordText()"> -->
+          <!-- <option></option> -->
+          <!-- <option v-for="note in dict.notes" :key="note" :value="note">{{ note }}</option> -->
+        <!-- </select> -->
+        <!-- <select v-model="chordSelector[1]" @change="updateChordText()"> -->
+          <!-- <option></option> -->
+          <!-- <option v-for="item in ['#', 'b']" :key="item" :value="item">{{ item }}</option> -->
+        <!-- </select> -->
+        <!-- <select v-model="chordSelector[2]" @change="updateChordText()"> -->
+          <!-- <option></option> -->
+          <!-- <option v-for="item in dict.chordTypes" :key="item" :value="item">{{ item }}</option> -->
+        <!-- </select> -->
+        <!-- <button @click.prevent="convertChordAndNotes">Get</button> -->
+      <!-- </div> -->
+      <!-- <hr /> -->
+    <!-- </div> -->
+    <!-- <div> -->
+      <!-- inputs -->
+      <!-- <select multiple style="width: 200px" @input="convertFromStores(($event.target as HTMLSelectElement).value)"> -->
+        <!-- <option v-for="key in Object.keys(stores)" :key="key">{{ key }}</option> -->
+      <!-- </select> -->
+    <!-- </div> -->
+  <!-- </div> -->
 </template>
 
 <style scoped lang="scss">
@@ -134,7 +244,8 @@ ul {
 }
 
 // $key-width: calc(100% / 14);
-$key-width: 16px;
+// $key-width: 16px;
+$key-width: 11px;
 $key-white-height: 200px;
 $key-black-height: 120px;
 
@@ -143,8 +254,8 @@ $key-black-height: 120px;
   align-items: center;
   justify-content: safe center;
   // justify-content: flex-start;
-  
-  width: 100vw;
+
+  width: 100%;
   overflow: auto;
 
   .piano-keys-list {
@@ -174,9 +285,24 @@ $key-black-height: 120px;
   & + .white-key {
     margin-left: -1px;
   }
-  // &:nth-of-type(12n + 1), &:nth-of-type(12n + 6) {
-  //     margin-left: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  // &:nth-of-type(12n + 1),
+  // &:nth-of-type(12n + 6) {
+  //   margin-left: -1px;
   // }
+  &:nth-of-type(12n + 1) {
+    border-bottom-left-radius: 10px;
+  }
+  &:nth-of-type(12n) {
+    border-bottom-right-radius: 10px;
+  }
+  &:nth-of-type(12n + 5) {
+    border-top-right-radius: 0;
+  }
+  &:nth-of-type(12n + 6) {
+    border-top-left-radius: 0;
+  }
 }
 
 .black-key {
@@ -184,7 +310,7 @@ $key-black-height: 120px;
   // height: 13rem;
   width: $key-width;
   height: $key-black-height;
-  
+
   border-radius: 5px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
